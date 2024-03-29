@@ -1,0 +1,122 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class Main extends JPanel {
+    // Constants for visualization
+    private static final int size = 200; // Number of elements to sort
+    private static final int gap = 4; // Gap between elements
+
+    // List to hold the numbers to be sorted
+    private static List<Integer> numbers = new ArrayList<>();
+
+    // Method to swap colors for visualization
+    private static void swapColors(Graphics g, int i, int j, int x, int y) {
+        // Set color to highlight the elements being swapped
+        g.setColor(Color.GREEN);
+        // Draw lines to represent the elements being swapped
+        g.drawLine(j, size, j, size - y); // Draw a line for the first element
+        try {
+            Thread.sleep(500); // Pause to visualize the swap
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Restore the original color by drawing over the lines
+        g.setColor(Color.BLACK);
+        g.drawLine(j, size, j, size - y); // Draw over the line of the first element
+
+        // Draw lines to represent the new positions of the swapped elements
+        g.setColor(Color.WHITE);
+        g.drawLine(j, size, j, size - x); // Draw a line for the second element
+        g.setColor(Color.BLACK);
+        g.drawLine(i, size, i, size - x); // Draw a line for the first element's new position
+        g.setColor(Color.GREEN);
+        g.drawLine(i, size, i, size - y); // Draw a line for the second element's new position
+        try {
+            Thread.sleep(500); // Pause to visualize the swap
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Restore the original color by drawing over the lines
+        g.setColor(Color.WHITE);
+        g.drawLine(i, size, i, size - y); // Draw over the line of the second element
+    }
+
+    // Method to perform swapping of elements in the list
+    private static void swap(List<Integer> arr, int i, int j) {
+        Collections.swap(arr, i, j); // Utilize Collections.swap() method to swap elements in the list
+    }
+
+    // Method to perform selection sort algorithm
+    private static void selectionSort(Graphics g) {
+        // Iterate over the list
+        for (int i = 0; i < size - 1; i++) {
+            int minIdx = i; // Assume the current index is the minimum
+            // Iterate over the remaining elements to find the minimum
+            for (int j = i + 1; j < size; j++) {
+                // If the current element is smaller than the assumed minimum, update the minimum index
+                if (numbers.get(j) < numbers.get(minIdx)) {
+                    minIdx = j;
+                }
+            }
+            // Swap the minimum element with the element at the current index
+            swap(numbers, i, minIdx);
+            // Visualize the swapping of elements
+            swapColors(g, gap * i + 1, gap * minIdx + 1, numbers.get(minIdx), numbers.get(i));
+        }
+    }
+
+    // Method to paint the components (draw lines) on the JPanel
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        // Iterate over the numbers list to draw lines representing the elements
+        for (int i = 1; i <= gap * size; i += gap) {
+            g.drawLine(i, size, i, size - numbers.get(i / gap));
+        }
+    }
+
+    // Main method
+    public static void main(String[] args) {
+        // Create a JFrame
+        JFrame frame = new JFrame("Selection Sort Visualization");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(gap * size + 1, size + 1); // Set size of the JFrame
+        frame.setResizable(false);
+
+        // Create an instance of the Main class (JPanel)
+        Main panel = new Main();
+        frame.add(panel); // Add the panel to the JFrame
+        frame.setVisible(true); // Make the JFrame visible
+
+        // Populate the numbers list with values from 1 to size and shuffle it
+        for (int i = 1; i <= size; i++) {
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers, new Random());
+
+        try {
+            Thread.sleep(200); // Pause before starting the sorting process
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        selectionSort(panel.getGraphics()); // Perform selection sort and visualize the process
+        panel.repaint(); // Repaint the panel to reflect the sorted order
+        System.out.println(numbers); // Print the sorted list
+
+        try {
+            Thread.sleep(5000); // Pause for visualization before exiting
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.exit(0); // Exit the program
+    }
+}
